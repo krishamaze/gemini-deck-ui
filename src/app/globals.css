@@ -78,12 +78,11 @@ body {
   animation: cyber-pulse 2s ease-in-out infinite;
 }
 
-/* Scanline effect */
-.scanline-overlay {
-  pointer-events: none;
+/* Scanline effect - decorative only, must not block interactions */
+.scanlines::before {
+  content: "";
   position: fixed;
   inset: 0;
-  z-index: 9999;
   background: repeating-linear-gradient(
     0deg,
     transparent,
@@ -91,5 +90,7 @@ body {
     rgba(0, 255, 159, 0.03) 2px,
     rgba(0, 255, 159, 0.03) 4px
   );
-  user-select: none;
+  pointer-events: none !important;
+  z-index: 9999;
+  touch-action: none;
 }
