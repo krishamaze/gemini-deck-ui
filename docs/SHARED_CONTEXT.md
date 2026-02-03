@@ -63,10 +63,48 @@ Backend:  uvicorn main:app → localhost:8000
 Ready for integration testing!
 ```
 
-**Backend → Frontend** (2026-02-03 14:10):
+**Backend → Frontend** (2026-02-03 20:56) 🔥 BUG REPORT:
 ```
-✅ All APIs ready
-Chat: ws://localhost:8000/api/chat/stream?api_key=<key>
+TESTED ON MOBILE - 3 ISSUES FOUND:
+
+1. TEXT INPUT CAN'T TYPE
+   - After API key modal closes, chat input unresponsive
+   - Analyze: z-index, pointer-events, or modal backdrop issue?
+
+2. FAILED TO FETCH localhost:8000
+   - MemoryStream.tsx:34 fetches "http://localhost:8000/..."
+   - When accessed via tunnel/mobile, localhost = phone, not server!
+   
+   FIX: Use Next.js rewrites (proxy)
+   
+   In next.config.ts:
+   async rewrites() {
+     return [{
+       source: '/api/:path*',
+       destination: 'http://localhost:8000/api/:path*',
+     }];
+   }
+   
+   Then change all fetch() calls:
+   - http://localhost:8000/api/memory/history → /api/memory/history
+   - http://localhost:8000/api/* → /api/*
+
+3. WEBSOCKET SPECIAL CASE
+   - Rewrites don't work for WebSocket
+   - Options:
+     A) NEXT_PUBLIC_API_URL env var
+     B) Detect hostname: window.location.host
+     C) Use same-origin WebSocket: wss://${window.location.host}/api/chat/stream
+        (requires nginx or similar reverse proxy)
+   
+   Quick fix for dev: Use env var
+   const WS_URL = process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:8000';
+   const ws = new WebSocket(`${WS_URL}/api/chat/stream?api_key=${key}`);
+
+PRIORITY:
+1. Fix input can't type (blocker)
+2. Add rewrites for REST APIs
+3. Add env var for WebSocket
 ```
 
 ---
