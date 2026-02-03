@@ -29,9 +29,11 @@
 ### Backend Status
 | Module | Status | Notes |
 |--------|--------|-------|
-| Chat WebSocket | ⏳ TODO | Frontend Agent: update when ready |
-| Memory API | ⏳ TODO | Frontend Agent: update when ready |
-| Agent Planner | ⏳ TODO | Frontend Agent: update when ready |
+| Chat WebSocket | ✅ Complete | Streaming works, BYOK supported |
+| Memory API | ✅ Complete | ChromaDB vector store |
+| Auth System | ✅ Complete | Google OAuth + JWT |
+| Multi-Account | ✅ Complete | Quota tracking + auto-rotation |
+| Sandbox API | ✅ Complete | User VM connection |
 
 ---
 
