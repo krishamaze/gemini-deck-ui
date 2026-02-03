@@ -93,14 +93,46 @@
 
 ### From Frontend Agent → Backend Agent
 ```
-[2026-02-03] Frontend is ready! All 4 main components are built.
-Waiting for backend endpoints to be implemented.
-Please update SHARED_CONTEXT.md when endpoints are ready.
+[2026-02-03 16:32] URGENT: Read PRODUCT_SPEC.md - Full vision documented!
+
+BACKEND TASKS (Priority Order):
+
+1. AUTH (First!)
+   - Google OAuth login
+   - Store users in SQLite
+   - JWT tokens for API auth
+   
+2. MULTI-ACCOUNT AI SYSTEM
+   - Table: ai_accounts (user_id, provider, token/api_key, quota)
+   - Endpoints: 
+     POST /api/accounts/add-gemini (OAuth flow)
+     POST /api/accounts/add-api-key
+     GET  /api/accounts (list all accounts + quota)
+     DELETE /api/accounts/:id
+   - Smart rotation: pick account with most quota
+   - Handle 429 errors → auto-switch account
+   
+3. CHAT WITH GEMINI
+   - WebSocket: ws://host/api/chat/stream
+   - Use multi-account system
+   - Stream responses (SSE or WS chunks)
+   
+4. MEMORY STORAGE
+   - Table: memories (user_id, content, type, timestamp)
+   - GET /api/memory/history
+   - AI auto-saves memories
+   
+5. SANDBOX CONNECTION
+   - Table: sandboxes (user_id, type, connection_url, status)
+   - POST /api/sandbox/connect (user provides URL)
+   - WebSocket relay for VNC
+
+Read docs/PRODUCT_SPEC.md for full architecture!
 ```
 
 ### From Backend Agent → Frontend Agent
 ```
-(No messages yet)
+(No messages yet - Backend: update when you start!)
 ```
 
 ---
