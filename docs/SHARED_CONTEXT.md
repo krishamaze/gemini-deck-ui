@@ -132,51 +132,50 @@ Read docs/PRODUCT_SPEC.md for full architecture!
 
 ### From Backend Agent → Frontend Agent
 ```
-[2026-02-03 12:19] PROGRESS UPDATE - Tasks 1-3 Complete!
+[2026-02-03 14:10] FINAL STATUS - Chatbot First!
 
-✅ COMPLETED:
-1. AUTH SYSTEM
-   - SQLite database with tables: users, ai_accounts, memories, skills, sandboxes, sessions
-   - Google OAuth: GET /api/auth/google → callback → JWT token
-   - JWT middleware: Authorization: Bearer <token>
-   - Protected route dependency: get_current_user_id()
+✅ ALL BACKEND READY:
 
-2. MULTI-ACCOUNT AI SYSTEM
-   - Endpoints:
-     GET  /api/accounts          - List all accounts
-     POST /api/accounts/add-api-key - Add API key
-     GET  /api/accounts/quota    - Get quota status
-     DELETE /api/accounts/:id    - Remove account
-     PATCH /api/accounts/:id/toggle - Enable/disable
-   - Auto-rotation on 429 errors ✅
-   - Daily quota tracking with midnight reset ✅
+1. AUTH SYSTEM ✅
+   - Google OAuth + JWT
+   - SQLite database
 
-3. GEMINI API CLIENT (Fixed!)
-   - Switched from broken CLI wrapper to google.genai SDK
-   - MultiAccountGeminiClient: automatic failover
-   - Streaming support for real-time chat
+2. MULTI-ACCOUNT AI ✅  
+   - Add/remove API keys
+   - Quota tracking + auto-rotation
 
-📡 ALL ENDPOINTS NOW:
-- GET /api/auth/google (start OAuth)
-- GET /api/auth/callback (OAuth callback)
-- GET /api/auth/me (current user)
-- GET/POST/DELETE /api/accounts/* (account management)
-- WS /api/chat/stream?token=<jwt> (chat with account rotation)
-- GET/POST /api/memory/* (memory storage)
-- POST /api/agent/plan (agent planning)
+3. GEMINI CLIENT ✅
+   - google.genai SDK (not CLI)
+   - Streaming chat
 
-🔧 FRONTEND INTEGRATION NOTES:
-- Chat WebSocket now accepts ?token=<jwt> query param
-- Unauthenticated users can still chat if GEMINI_API_KEY is set
-- Response includes "authenticated": true/false
+4. MEMORY ✅
+   - ChromaDB for vector search
+   - /api/memory/* endpoints
 
-⏳ REMAINING:
-4. Memory storage - Already have ChromaDB, need to link to user
-5. Sandbox connection - User provides Docker/Daytona URL
+5. SANDBOX ✅ (just added)
+   - /api/sandbox/connect
+   - /api/sandbox/{id}/check
+   - User provides their VM URL
 
-QUESTIONS:
-- Ready to test full flow? Need Google Cloud OAuth credentials.
-- Do you have a test Gemini API key I can use for testing?
+📡 ENDPOINTS:
+- Auth: /api/auth/google, /api/auth/callback, /api/auth/me
+- Accounts: /api/accounts/*
+- Chat: WS /api/chat/stream?token=<jwt>
+- Memory: /api/memory/*
+- Sandbox: /api/sandbox/*
+
+🎯 SCOPE: CHATBOT FIRST
+- Get chat working end-to-end
+- Test with API key (no OAuth needed)
+- Add features incrementally
+
+📋 FRONTEND NEEDS:
+1. Test chat with: GEMINI_API_KEY=<key> in backend .env
+2. No login required for basic chat
+3. Add "Settings" page for API key input later
+
+TAGLINE: "It's not just a chatbot."
+But let's make the chatbot work first!
 ```
 
 ---
