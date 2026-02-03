@@ -58,7 +58,27 @@ export function ChatConsole() {
     }
     setNoApiKey(false);
 
-    const wsUrl = `ws://localhost:8000/api/chat/stream?api_key=${encodeURIComponent(apiKey)}`;
+    // Build WebSocket URL - use env var or detect dynamically for tunnel/mobile support
+    const getWsUrl = () => {
+      if (process.env.NEXT_PUBLIC_WS_URL) {
+        return process.env.NEXT_PUBLIC_WS_URL;
+      }
+      // Dynamic detection: use current host with ws/wss protocol
+      if (typeof window !== "undefined") {
+        const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+        const host = window.location.host;
+        // If running on localhost:3000 (dev), connect to backend on 8000
+        if (host.includes("localhost:3000") || host.includes("127.0.0.1:3000")) {
+          return "ws://localhost:8000";
+        }
+        // Otherwise assume same host (tunnel/production with reverse proxy)
+        return `${protocol}//${host}`;
+      }
+      return "ws://localhost:8000";
+    };
+
+    const wsBaseUrl = getWsUrl();
+    const wsUrl = `${wsBaseUrl}/api/chat/stream?api_key=${encodeURIComponent(apiKey)}`;
     addDebugLog(`Connecting to ${wsUrl.replace(apiKey, "***")}`);
     const ws = new WebSocket(wsUrl);
 

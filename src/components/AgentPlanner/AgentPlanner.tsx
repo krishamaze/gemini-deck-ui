@@ -46,7 +46,7 @@ export function AgentPlanner({ className = "" }: AgentPlannerProps) {
     setPlan(null);
 
     try {
-      const response = await fetch("http://localhost:8000/api/agent/plan", {
+      const response = await fetch("/api/agent/plan", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

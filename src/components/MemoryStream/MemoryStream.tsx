@@ -31,7 +31,7 @@ export function MemoryStream({
     setError(null);
 
     try {
-      const response = await fetch("http://localhost:8000/api/memory/history");
+      const response = await fetch("/api/memory/history");
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}`);
       }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Key, ExternalLink, Eye, EyeOff, Sparkles, X, Check } from "lucide-react";
 import { useApiKeyStore } from "@/stores/apiKeyStore";
 
@@ -16,6 +16,16 @@ export function ApiKeyModal({ isOpen, onClose, mode = "setup" }: ApiKeyModalProp
   const [showKey, setShowKey] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
+
+  // Reset state when modal opens/closes
+  useEffect(() => {
+    if (isOpen) {
+      setInputValue(apiKey || "");
+      setShowKey(false);
+      setError(null);
+      setSaved(false);
+    }
+  }, [isOpen, apiKey]);
 
   if (!isOpen) return null;
 
@@ -50,11 +60,16 @@ export function ApiKeyModal({ isOpen, onClose, mode = "setup" }: ApiKeyModalProp
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
-      {/* Backdrop */}
+    <div 
+      className="fixed inset-0 z-50 flex items-center justify-center"
+      role="dialog"
+      aria-modal="true"
+    >
+      {/* Backdrop - ensure it doesn't block after close */}
       <div
         className="absolute inset-0 bg-black/80 backdrop-blur-sm"
         onClick={mode === "settings" ? onClose : undefined}
+        aria-hidden="true"
       />
 
       {/* Modal */}

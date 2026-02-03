@@ -68,6 +68,8 @@ export default function Home() {
   useEffect(() => {
     if (mounted && !apiKey) {
       setShowSetupModal(true);
+    } else if (mounted && apiKey) {
+      setShowSetupModal(false);
     }
   }, [mounted, apiKey]);
 

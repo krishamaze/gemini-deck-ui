@@ -23,6 +23,15 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  // Proxy API requests to backend (fixes localhost issues on mobile/tunnel)
+  async rewrites() {
+    return [
+      {
+        source: '/api/:path*',
+        destination: 'http://localhost:8000/api/:path*',
+      },
+    ];
+  },
   turbopack: {
     rules: {
       "*.{jsx,tsx}": {
