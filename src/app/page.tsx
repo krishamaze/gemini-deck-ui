@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import {
   Terminal,
@@ -11,10 +11,13 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   Loader2,
+  Key,
 } from "lucide-react";
 import { ChatConsole } from "@/components/ChatConsole";
 import { MemoryStream } from "@/components/MemoryStream";
 import { AgentPlanner } from "@/components/AgentPlanner";
+import { ApiKeyModal } from "@/components/ApiKeyModal";
+import { useApiKeyStore } from "@/stores/apiKeyStore";
 
 // Dynamic import for VirtualDisplay to avoid SSR issues with noVNC
 // noVNC uses top-level await which isn't supported during server-side rendering
@@ -49,8 +52,24 @@ const tabs: Tab[] = [
 ];
 
 export default function Home() {
+  const { apiKey } = useApiKeyStore();
   const [activeTab, setActiveTab] = useState<TabId>("chat");
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [showSetupModal, setShowSetupModal] = useState(false);
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  // Handle hydration mismatch - only check apiKey after mount
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Show setup modal if no API key (after hydration)
+  useEffect(() => {
+    if (mounted && !apiKey) {
+      setShowSetupModal(true);
+    }
+  }, [mounted, apiKey]);
 
   return (
     <div className="scanlines relative flex h-screen bg-background">
@@ -111,15 +130,28 @@ export default function Home() {
         </nav>
 
         {/* Footer */}
-        <div className="border-t border-cyber-border p-2">
-          <button className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-gray-400 hover:bg-cyber-border hover:text-white">
-            <Settings className="h-4 w-4" />
-            {!sidebarCollapsed && (
-              <span className="text-sm font-medium">Settings</span>
-            )}
-          </button>
-        </div>
-      </aside>
+          <div className="border-t border-cyber-border p-2">
+            <button
+              onClick={() => setShowSettingsModal(true)}
+              className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 transition-all ${
+                apiKey
+                  ? "text-gray-400 hover:bg-cyber-border hover:text-white"
+                  : "bg-cyber-warning/20 text-cyber-warning"
+              }`}
+            >
+              {apiKey ? (
+                <Settings className="h-4 w-4" />
+              ) : (
+                <Key className="h-4 w-4" />
+              )}
+              {!sidebarCollapsed && (
+                <span className="text-sm font-medium">
+                  {apiKey ? "Settings" : "Add API Key"}
+                </span>
+              )}
+            </button>
+          </div>
+        </aside>
 
       {/* Main Content */}
       <main className="flex flex-1 flex-col overflow-hidden">

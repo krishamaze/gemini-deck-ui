@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Send, Terminal, Bug, ChevronDown, ChevronUp } from "lucide-react";
+import { Send, Terminal, Bug, ChevronDown, ChevronUp, Key, AlertCircle } from "lucide-react";
+import { useApiKeyStore } from "@/stores/apiKeyStore";
 
 interface ChatMessage {
   id: string;
@@ -19,12 +20,14 @@ interface WebSocketMessage {
 }
 
 export function ChatConsole() {
+  const { apiKey } = useApiKeyStore();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [isConnected, setIsConnected] = useState(false);
   const [isStreaming, setIsStreaming] = useState(false);
   const [showDebug, setShowDebug] = useState(false);
   const [debugLogs, setDebugLogs] = useState<string[]>([]);
+  const [noApiKey, setNoApiKey] = useState(false);
   
   const wsRef = useRef<WebSocket | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -48,8 +51,16 @@ export function ChatConsole() {
   const connect = useCallback(() => {
     if (wsRef.current?.readyState === WebSocket.OPEN) return;
 
-    addDebugLog("Connecting to ws://localhost:8000/api/chat/stream");
-    const ws = new WebSocket("ws://localhost:8000/api/chat/stream");
+    if (!apiKey) {
+      setNoApiKey(true);
+      addDebugLog("No API key configured");
+      return;
+    }
+    setNoApiKey(false);
+
+    const wsUrl = `ws://localhost:8000/api/chat/stream?api_key=${encodeURIComponent(apiKey)}`;
+    addDebugLog(`Connecting to ${wsUrl.replace(apiKey, "***")}`);
+    const ws = new WebSocket(wsUrl);
 
     ws.onopen = () => {
       setIsConnected(true);
@@ -111,7 +122,7 @@ export function ChatConsole() {
     };
 
     wsRef.current = ws;
-  }, [addDebugLog]);
+  }, [addDebugLog, apiKey]);
 
   useEffect(() => {
     connect();
@@ -119,6 +130,15 @@ export function ChatConsole() {
       wsRef.current?.close();
     };
   }, [connect]);
+
+  // Reconnect when API key changes
+  useEffect(() => {
+    if (apiKey) {
+      wsRef.current?.close();
+      wsRef.current = null;
+      connect();
+    }
+  }, [apiKey]);
 
   const sendMessage = () => {
     if (!input.trim() || !wsRef.current || isStreaming) return;
@@ -244,13 +264,29 @@ export function ChatConsole() {
         </div>
       )}
 
-      {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4">
-        {messages.length === 0 ? (
-          <div className="flex h-full items-center justify-center text-gray-500">
-            <p>Start a conversation...</p>
-          </div>
-        ) : (
+        {/* Messages */}
+        <div className="flex-1 overflow-y-auto p-4">
+          {noApiKey ? (
+            <div className="flex h-full flex-col items-center justify-center gap-4 text-center">
+              <div className="rounded-full bg-cyber-warning/20 p-4">
+                <Key className="h-8 w-8 text-cyber-warning" />
+              </div>
+              <div>
+                <p className="text-lg font-medium text-white">API Key Required</p>
+                <p className="mt-1 text-sm text-gray-400">
+                  Configure your Gemini API key in Settings to start chatting.
+                </p>
+              </div>
+              <div className="flex items-center gap-2 rounded-lg border border-cyber-warning/30 bg-cyber-warning/10 px-4 py-2 text-sm text-cyber-warning">
+                <AlertCircle className="h-4 w-4" />
+                Click Settings in the sidebar to add your key
+              </div>
+            </div>
+          ) : messages.length === 0 ? (
+            <div className="flex h-full items-center justify-center text-gray-500">
+              <p>Start a conversation...</p>
+            </div>
+          ) : (
           <div className="space-y-4">
             {messages.map((msg) => (
               <div
