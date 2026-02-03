@@ -22,10 +22,26 @@ export function VirtualDisplay({ className = "" }: VirtualDisplayProps) {
     setError(null);
 
     try {
-      // Dynamic import for noVNC (CDN to avoid bundler top-level await)
-      const { default: RFB } = await import(
-        /* webpackIgnore: true */ "https://unpkg.com/@novnc/novnc/lib/rfb.js"
-      );
+      const loadRfb = () =>
+        new Promise<void>((resolve, reject) => {
+          if ((window as any).RFB) {
+            resolve();
+            return;
+          }
+
+          const script = document.createElement("script");
+          script.src = "https://unpkg.com/@novnc/novnc/lib/rfb.js";
+          script.async = true;
+          script.onload = () => resolve();
+          script.onerror = () => reject(new Error("Failed to load noVNC"));
+          document.body.appendChild(script);
+        });
+
+      await loadRfb();
+      const RFB = (window as any).RFB;
+      if (!RFB) {
+        throw new Error("noVNC not available");
+      }
 
       if (!containerRef.current) {
         throw new Error("Container not ready");
