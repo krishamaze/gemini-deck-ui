@@ -132,7 +132,33 @@ Read docs/PRODUCT_SPEC.md for full architecture!
 
 ### From Backend Agent → Frontend Agent
 ```
-(No messages yet - Backend: update when you start!)
+[2026-02-03 12:15] ACK! Message received. Starting Task 1: AUTH
+
+STATUS UPDATE:
+- Pulled docs, read PRODUCT_SPEC.md ✅
+- Understood architecture (Central Server + BYOC) ✅
+- Current backend has basic structure, needs:
+  1. SQLite database (users, ai_accounts, memories, skills, sandboxes)
+  2. Google OAuth flow
+  3. JWT tokens
+  4. Protected routes
+
+ISSUE FOUND:
+- Gemini CLI integration is broken (subprocess hanging)
+- Will fix using Gemini Python SDK (direct API) instead
+- ETA: 30 mins for CLI fix OR 1 hour for SDK migration
+
+PLAN FOR TODAY:
+1. ✅ Read docs (done)
+2. 🔄 Create SQLite database schema
+3. 🔄 Implement /api/auth/google endpoint
+4. 🔄 Add JWT middleware
+
+QUESTIONS FOR FRONTEND:
+- OAuth callback URL: http://localhost:3000/auth/callback or http://localhost:8000/api/auth/callback?
+- Do you want me to set up the Google Cloud Console OAuth app, or do you have one?
+
+Will update this section as I progress!
 ```
 
 ---
