@@ -1,26 +1,95 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #0a0a0a;
+  --foreground: #ededed;
+  --cyber-primary: #00ff9f;
+  --cyber-secondary: #00d4ff;
+  --cyber-accent: #ff00ff;
+  --cyber-warning: #ffaa00;
+  --cyber-danger: #ff0055;
+  --cyber-surface: #111111;
+  --cyber-border: #1f1f1f;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-cyber-primary: var(--cyber-primary);
+  --color-cyber-secondary: var(--cyber-secondary);
+  --color-cyber-accent: var(--cyber-accent);
+  --color-cyber-warning: var(--cyber-warning);
+  --color-cyber-danger: var(--cyber-danger);
+  --color-cyber-surface: var(--cyber-surface);
+  --color-cyber-border: var(--cyber-border);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-mono), monospace;
+}
+
+/* Cyberpunk scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--cyber-surface);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--cyber-primary);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--cyber-secondary);
+}
+
+/* Glow effects */
+.glow-primary {
+  box-shadow: 0 0 10px var(--cyber-primary), 0 0 20px var(--cyber-primary);
+}
+
+.glow-secondary {
+  box-shadow: 0 0 10px var(--cyber-secondary), 0 0 20px var(--cyber-secondary);
+}
+
+.text-glow-primary {
+  text-shadow: 0 0 10px var(--cyber-primary);
+}
+
+.text-glow-secondary {
+  text-shadow: 0 0 10px var(--cyber-secondary);
+}
+
+/* Pulse animation */
+@keyframes cyber-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.cyber-pulse {
+  animation: cyber-pulse 2s ease-in-out infinite;
+}
+
+/* Scanline effect */
+.scanlines::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 255, 159, 0.03) 2px,
+    rgba(0, 255, 159, 0.03) 4px
+  );
+  pointer-events: none;
+  z-index: 10;
 }
