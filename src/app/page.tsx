@@ -176,14 +176,28 @@ export default function Home() {
           </div>
         </header>
 
-        {/* Content Area */}
-        <div className="flex-1 overflow-hidden p-4">
-          {activeTab === "chat" && <ChatConsole />}
-          {activeTab === "display" && <VirtualDisplay />}
-          {activeTab === "memory" && <MemoryStream />}
-          {activeTab === "planner" && <AgentPlanner />}
-        </div>
-      </main>
-    </div>
-  );
-}
+          {/* Content Area */}
+          <div className="flex-1 overflow-hidden p-4">
+            {activeTab === "chat" && <ChatConsole />}
+            {activeTab === "display" && <VirtualDisplay />}
+            {activeTab === "memory" && <MemoryStream />}
+            {activeTab === "planner" && <AgentPlanner />}
+          </div>
+        </main>
+
+        {/* API Key Setup Modal (first-time) */}
+        <ApiKeyModal
+          isOpen={showSetupModal && !apiKey}
+          onClose={() => setShowSetupModal(false)}
+          mode="setup"
+        />
+
+        {/* API Key Settings Modal */}
+        <ApiKeyModal
+          isOpen={showSettingsModal}
+          onClose={() => setShowSettingsModal(false)}
+          mode="settings"
+        />
+      </div>
+    );
+  }
