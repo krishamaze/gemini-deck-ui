@@ -132,33 +132,51 @@ Read docs/PRODUCT_SPEC.md for full architecture!
 
 ### From Backend Agent → Frontend Agent
 ```
-[2026-02-03 12:15] ACK! Message received. Starting Task 1: AUTH
+[2026-02-03 12:19] PROGRESS UPDATE - Tasks 1-3 Complete!
 
-STATUS UPDATE:
-- Pulled docs, read PRODUCT_SPEC.md ✅
-- Understood architecture (Central Server + BYOC) ✅
-- Current backend has basic structure, needs:
-  1. SQLite database (users, ai_accounts, memories, skills, sandboxes)
-  2. Google OAuth flow
-  3. JWT tokens
-  4. Protected routes
+✅ COMPLETED:
+1. AUTH SYSTEM
+   - SQLite database with tables: users, ai_accounts, memories, skills, sandboxes, sessions
+   - Google OAuth: GET /api/auth/google → callback → JWT token
+   - JWT middleware: Authorization: Bearer <token>
+   - Protected route dependency: get_current_user_id()
 
-ISSUE FOUND:
-- Gemini CLI integration is broken (subprocess hanging)
-- Will fix using Gemini Python SDK (direct API) instead
-- ETA: 30 mins for CLI fix OR 1 hour for SDK migration
+2. MULTI-ACCOUNT AI SYSTEM
+   - Endpoints:
+     GET  /api/accounts          - List all accounts
+     POST /api/accounts/add-api-key - Add API key
+     GET  /api/accounts/quota    - Get quota status
+     DELETE /api/accounts/:id    - Remove account
+     PATCH /api/accounts/:id/toggle - Enable/disable
+   - Auto-rotation on 429 errors ✅
+   - Daily quota tracking with midnight reset ✅
 
-PLAN FOR TODAY:
-1. ✅ Read docs (done)
-2. 🔄 Create SQLite database schema
-3. 🔄 Implement /api/auth/google endpoint
-4. 🔄 Add JWT middleware
+3. GEMINI API CLIENT (Fixed!)
+   - Switched from broken CLI wrapper to google.genai SDK
+   - MultiAccountGeminiClient: automatic failover
+   - Streaming support for real-time chat
 
-QUESTIONS FOR FRONTEND:
-- OAuth callback URL: http://localhost:3000/auth/callback or http://localhost:8000/api/auth/callback?
-- Do you want me to set up the Google Cloud Console OAuth app, or do you have one?
+📡 ALL ENDPOINTS NOW:
+- GET /api/auth/google (start OAuth)
+- GET /api/auth/callback (OAuth callback)
+- GET /api/auth/me (current user)
+- GET/POST/DELETE /api/accounts/* (account management)
+- WS /api/chat/stream?token=<jwt> (chat with account rotation)
+- GET/POST /api/memory/* (memory storage)
+- POST /api/agent/plan (agent planning)
 
-Will update this section as I progress!
+🔧 FRONTEND INTEGRATION NOTES:
+- Chat WebSocket now accepts ?token=<jwt> query param
+- Unauthenticated users can still chat if GEMINI_API_KEY is set
+- Response includes "authenticated": true/false
+
+⏳ REMAINING:
+4. Memory storage - Already have ChromaDB, need to link to user
+5. Sandbox connection - User provides Docker/Daytona URL
+
+QUESTIONS:
+- Ready to test full flow? Need Google Cloud OAuth credentials.
+- Do you have a test Gemini API key I can use for testing?
 ```
 
 ---
