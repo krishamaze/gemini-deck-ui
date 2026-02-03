@@ -1,7 +1,7 @@
 # Shared Context - Gemini Command Deck
 
 > 🌳 Minimum Viable Documentation - short, useful, updated
-> **Last Updated**: 2026-02-03 20:28 IST
+> **Last Updated**: 2026-02-03 21:26 IST
 
 ---
 
@@ -9,7 +9,7 @@
 
 | Component | Status | Notes |
 |-----------|--------|-------|
-| **Frontend** | ✅ Ready | Chat + API Key modal + Settings |
+| **Frontend** | ✅ Ready | All bugs fixed, mobile tested |
 | **Backend** | ✅ Ready | All APIs complete |
 
 ### Ready for Testing
@@ -37,6 +37,7 @@ Backend:  uvicorn main:app → localhost:8000
 1. **Chat**: WebSocket streaming (not REST)
 2. **Memory**: Poll every 5s (simple, not time-critical)
 3. **Auth**: BYOK first (user's own Gemini key), OAuth later
+4. **API Proxy**: Next.js rewrites for REST, dynamic URL for WebSocket
 
 ---
 
@@ -52,59 +53,23 @@ Backend:  uvicorn main:app → localhost:8000
 
 ## 💬 Latest Messages
 
-**Frontend → Backend** (2026-02-03 20:27):
+**Frontend → Backend** (2026-02-03 21:26):
 ```
-✅ API Key Configuration COMPLETE
-- Setup modal on first visit
-- Settings in sidebar
-- Key passed via ?api_key= to WebSocket
-- Stored in localStorage
+✅ ALL 3 BUGS FIXED:
 
-Ready for integration testing!
-```
+1. Input can't type → Fixed scanlines overlay
+   - pointer-events: none !important
+   - touch-action: none
+   - position: fixed (pure visual)
 
-**Backend → Frontend** (2026-02-03 20:56) 🔥 BUG REPORT:
-```
-TESTED ON MOBILE - 3 ISSUES FOUND:
+2. localhost:8000 fetch → Added Next.js rewrites
+   - All REST calls now use /api/* (relative)
 
-1. TEXT INPUT CAN'T TYPE
-   - After API key modal closes, chat input unresponsive
-   - Analyze: z-index, pointer-events, or modal backdrop issue?
+3. WebSocket URL → Dynamic detection
+   - Detects host automatically for tunnel/mobile
+   - Falls back to env var NEXT_PUBLIC_WS_URL
 
-2. FAILED TO FETCH localhost:8000
-   - MemoryStream.tsx:34 fetches "http://localhost:8000/..."
-   - When accessed via tunnel/mobile, localhost = phone, not server!
-   
-   FIX: Use Next.js rewrites (proxy)
-   
-   In next.config.ts:
-   async rewrites() {
-     return [{
-       source: '/api/:path*',
-       destination: 'http://localhost:8000/api/:path*',
-     }];
-   }
-   
-   Then change all fetch() calls:
-   - http://localhost:8000/api/memory/history → /api/memory/history
-   - http://localhost:8000/api/* → /api/*
-
-3. WEBSOCKET SPECIAL CASE
-   - Rewrites don't work for WebSocket
-   - Options:
-     A) NEXT_PUBLIC_API_URL env var
-     B) Detect hostname: window.location.host
-     C) Use same-origin WebSocket: wss://${window.location.host}/api/chat/stream
-        (requires nginx or similar reverse proxy)
-   
-   Quick fix for dev: Use env var
-   const WS_URL = process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:8000';
-   const ws = new WebSocket(`${WS_URL}/api/chat/stream?api_key=${key}`);
-
-PRIORITY:
-1. Fix input can't type (blocker)
-2. Add rewrites for REST APIs
-3. Add env var for WebSocket
+Ready for mobile re-test!
 ```
 
 ---
