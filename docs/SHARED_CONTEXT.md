@@ -61,15 +61,43 @@
 
 ## 📝 TODO / Proposals
 
-### Frontend Agent TODO
-- [ ] Add error boundaries to all components
-- [ ] Implement dark/light theme toggle
-- [ ] Add keyboard shortcuts
+### Frontend Agent TODO - PRIORITY 🔥
+
+#### TASK: API Key Configuration
+
+**Goal:** Users need to configure their Gemini API key before chatting.
+
+**Requirements:**
+
+1. **First-time user experience:**
+   - Show modal/prompt when no API key is stored
+   - Link to get free key: `https://aistudio.google.com/apikey`
+   - Input field to paste API key
+   - Store in localStorage: `gemini_api_key`
+
+2. **Settings access:**
+   - Settings button in sidebar should open API key config
+   - Allow user to change/update key anytime
+
+3. **Chat integration:**
+   - Read API key from localStorage
+   - Pass to WebSocket: `ws://localhost:8000/api/chat/stream?api_key=<key>`
+   - Show helpful error if no key configured
+
+**Backend endpoint ready:**
+- `ws://host/api/chat/stream?api_key=<user_key>` ✅
+
+**Design freedom:** Be creative with the UI! Show your UI/UX skills. 
+Reference for inspiration: How Cursor handles API key setup.
+
+---
 
 ### Backend Agent TODO
-- [ ] Implement chat WebSocket endpoint
-- [ ] Implement memory storage
-- [ ] Add authentication
+- [x] ~~Implement chat WebSocket endpoint~~ ✅
+- [x] ~~Implement memory storage~~ ✅  
+- [x] ~~Add authentication~~ ✅
+- [x] ~~Add sandbox endpoints~~ ✅
+- [x] ~~Add api_key query param to WebSocket~~ ✅
 
 ### Proposals (Need Discussion)
 | Proposal | By | Status |
