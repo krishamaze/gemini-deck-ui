@@ -79,10 +79,11 @@ body {
 }
 
 /* Scanline effect */
-.scanlines::before {
-  content: "";
-  position: absolute;
+.scanline-overlay {
+  pointer-events: none;
+  position: fixed;
   inset: 0;
+  z-index: 9999;
   background: repeating-linear-gradient(
     0deg,
     transparent,
@@ -90,6 +91,5 @@ body {
     rgba(0, 255, 159, 0.03) 2px,
     rgba(0, 255, 159, 0.03) 4px
   );
-  pointer-events: none;
-  z-index: 10;
+  user-select: none;
 }

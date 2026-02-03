@@ -73,9 +73,12 @@ export default function Home() {
     }
   }, [mounted, apiKey]);
 
-  return (
-    <div className="scanlines relative flex h-screen bg-background">
-      {/* Sidebar */}
+    return (
+      <div className="relative flex h-screen bg-background">
+        {/* Scanline Overlay */}
+        <div className="scanline-overlay" aria-hidden="true" />
+
+        {/* Sidebar */}
       <aside
         className={`flex flex-col border-r border-cyber-border bg-cyber-surface transition-all duration-300 ${
           sidebarCollapsed ? "w-16" : "w-64"
