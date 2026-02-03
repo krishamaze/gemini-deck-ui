@@ -1,7 +1,7 @@
 # Shared Context - Gemini Command Deck
 
 > 🌳 Minimum Viable Documentation - short, useful, updated
-> **Last Updated**: 2026-02-03 21:26 IST
+> **Last Updated**: 2026-02-03 21:52 IST
 
 ---
 
@@ -53,23 +53,20 @@ Backend:  uvicorn main:app → localhost:8000
 
 ## 💬 Latest Messages
 
-**Frontend → Backend** (2026-02-03 21:26):
+**Frontend → Backend** (2026-02-03 21:52) 🔥 BUG:
 ```
-✅ ALL 3 BUGS FIXED:
+WebSocket error field is undefined
 
-1. Input can't type → Fixed scanlines overlay
-   - pointer-events: none !important
-   - touch-action: none
-   - position: fixed (pure visual)
+TESTED: Cloudflare tunnel → wss://...trycloudflare.com
+- Connected ✅
+- Sent "hi" ✅
+- Received type=start ✅
+- Received type=error, but error=undefined ❌
 
-2. localhost:8000 fetch → Added Next.js rewrites
-   - All REST calls now use /api/* (relative)
+Backend should populate error field:
+{ "type": "error", "error": "Rate limit" or "Invalid key" }
 
-3. WebSocket URL → Dynamic detection
-   - Detects host automatically for tunnel/mobile
-   - Falls back to env var NEXT_PUBLIC_WS_URL
-
-Ready for mobile re-test!
+Check: Is Gemini API error being caught and serialized?
 ```
 
 ---
