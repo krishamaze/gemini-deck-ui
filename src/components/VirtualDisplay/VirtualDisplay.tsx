@@ -9,7 +9,6 @@ interface VirtualDisplayProps {
 
 export function VirtualDisplay({ className = "" }: VirtualDisplayProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
   const rfbRef = useRef<any>(null);
   const [isConnected, setIsConnected] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
@@ -23,9 +22,11 @@ export function VirtualDisplay({ className = "" }: VirtualDisplayProps) {
     setError(null);
 
     try {
-      // Dynamic import for noVNC
-      const { default: RFB } = await import("@novnc/novnc/lib/rfb.js");
-      
+      // Dynamic import for noVNC (CDN to avoid bundler top-level await)
+      const { default: RFB } = await import(
+        /* webpackIgnore: true */ "https://unpkg.com/@novnc/novnc/lib/rfb.js"
+      );
+
       if (!containerRef.current) {
         throw new Error("Container not ready");
       }

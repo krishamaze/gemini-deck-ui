@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import dynamic from "next/dynamic";
 import {
   Terminal,
   Monitor,
@@ -9,11 +10,28 @@ import {
   Settings,
   PanelLeftClose,
   PanelLeftOpen,
+  Loader2,
 } from "lucide-react";
 import { ChatConsole } from "@/components/ChatConsole";
-import { VirtualDisplay } from "@/components/VirtualDisplay";
 import { MemoryStream } from "@/components/MemoryStream";
 import { AgentPlanner } from "@/components/AgentPlanner";
+
+// Dynamic import for VirtualDisplay to avoid SSR issues with noVNC
+// noVNC uses top-level await which isn't supported during server-side rendering
+const VirtualDisplay = dynamic(
+  () => import("@/components/VirtualDisplay").then((mod) => mod.VirtualDisplay),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex h-full items-center justify-center rounded-lg border border-cyber-border bg-cyber-surface">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="h-8 w-8 animate-spin text-cyber-secondary" />
+          <p className="text-cyber-secondary">Loading display...</p>
+        </div>
+      </div>
+    ),
+  }
+);
 
 type TabId = "chat" | "display" | "memory" | "planner";
 
